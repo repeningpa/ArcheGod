@@ -3,8 +3,8 @@ import flet as ft
 import win32api, win32gui
 from time import sleep
 from fish import mainSearch
-from keyboardClick import buffsOnHorse, qfClick
-import pyautogui as pag
+from keyboardClick import buffsOnHorse, qfClick, keyboardClick
+import keyboard as kb
 
 def main(page: ft.Page):
     page.title = "ArcheGod"
@@ -25,11 +25,34 @@ def main(page: ft.Page):
         else:
             headerContainer.bgcolor = ft.colors.SURFACE_VARIANT
         page.update()
-            
+
     fishCb = ft.Checkbox(label = "Долбить рыбу", on_change = changeEvent)
     bardCb = ft.Checkbox(label = "Ебашить по флейте", on_change = changeEvent)
     qfCb = ft.Checkbox(label = "QF", on_change = changeEvent)
     headerText = ft.Text(size = 40, text_align = ft.TextAlign.CENTER)
+    
+    bardRow = ft.ExpansionTile(
+        title = ft.Text("Бард"),
+        subtitle = ft.Text("Макросы для хилочки..."),
+        affinity = ft.TileAffinity.LEADING,
+        collapsed_text_color = ft.colors.GREEN,
+        text_color = ft.colors.GREEN,
+        controls_padding = 25,
+        controls=[
+            bardCb,
+        ],
+    )
+    
+    ddRow = ft.ExpansionTile(
+        title = ft.Text("ДД"),
+        affinity = ft.TileAffinity.LEADING,
+        collapsed_text_color = ft.colors.RED,
+        text_color = ft.colors.RED,
+        controls_padding = 25,
+        controls=[
+            qfCb,
+        ],
+    )
     
     headerContainer = ft.Container(
         content = headerText,
@@ -58,27 +81,8 @@ def main(page: ft.Page):
                             fishCb,
                         ],
                     ),
-                    ft.ExpansionTile(
-                        title = ft.Text("Бард"),
-                        subtitle = ft.Text("Макросы для хилочки..."),
-                        affinity = ft.TileAffinity.LEADING,
-                        collapsed_text_color = ft.colors.GREEN,
-                        text_color = ft.colors.GREEN,
-                        controls_padding = 25,
-                        controls=[
-                            bardCb,
-                        ],
-                    ),
-                    ft.ExpansionTile(
-                        title = ft.Text("ДД"),
-                        affinity = ft.TileAffinity.LEADING,
-                        collapsed_text_color = ft.colors.RED,
-                        text_color = ft.colors.RED,
-                        controls_padding = 25,
-                        controls=[
-                            qfCb,
-                        ],
-                    ),
+                    bardRow,
+                    ddRow
                 ],
                 padding = 0,
                 scroll = ft.ScrollMode.ADAPTIVE
@@ -94,14 +98,13 @@ def main(page: ft.Page):
     def mining():
         while True:
             sleep(2)
+            while bardCb.value == True:
+                buffsOnHorse(window_handle)
             while fishCb.value == True:
-                sleep(0.5)
+                # sleep(0.1)
                 # pag.screenshot('test1.png', region = (1180, 100, 140, 50))
                 mainSearch(window_handle, 1180, 100, 140, 50)
                 # mainSearch(window_handle, 275, 100, 140, 50)
-            while bardCb.value == True:
-                sleep(0.5)
-                buffsOnHorse(window_handle)
             while qfCb.value == True:
                 qfClick(window_handle)
 
@@ -109,7 +112,8 @@ def main(page: ft.Page):
     window_handle = get_window_at_mouse_pos_win()
     print(window_handle)
     win32gui.SetForegroundWindow(window_handle) # hwnd
-    threading.Thread(target = mining, daemon = True).start()
+    
+    threading.Thread(target = mining, daemon = True).start() # поток с событиями
     
     page.on_route_change = route_change(page)
     page.on_view_pop = view_pop

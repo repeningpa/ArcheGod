@@ -60,7 +60,6 @@ def testEventKeyUp(window_handle):
     win32api.SendMessage(window_handle, win32con.WM_CHAR, ord('r'), 0)
     
 def testEventKeyDown(window_handle):
-    print('down')
     win32api.SendMessage(window_handle, win32con.WM_CHAR, ord('a'), 0)
     sleep(1)
     win32api.SendMessage(window_handle, win32con.WM_CHAR, ord('s'), 0)
@@ -68,3 +67,49 @@ def testEventKeyDown(window_handle):
     win32api.SendMessage(window_handle, win32con.WM_CHAR, ord('d'), 0)
     sleep(1)
     win32api.SendMessage(window_handle, win32con.WM_CHAR, ord('f'), 0)
+
+def bigHeal(window_handle):
+    # F3
+    win32gui.SendMessage(window_handle, win32con.WM_KEYDOWN, 0x72, 0)
+    sleep(0.1)
+    win32api.SendMessage(window_handle, win32con.WM_KEYUP, 0x72, 0)
+    sleep(0.5)
+    
+    # 4
+    for n in range(5):
+        win32gui.SendMessage(window_handle, win32con.WM_KEYDOWN, 0x34, 0)
+        sleep(0.1)
+        win32api.SendMessage(window_handle, win32con.WM_KEYUP, 0x34, 0)
+        sleep(0.5)
+
+    # F1
+    win32gui.SendMessage(window_handle, win32con.WM_KEYDOWN, 0x70, 0)
+    sleep(0.1)
+    win32api.SendMessage(window_handle, win32con.WM_KEYUP, 0x70, 0)
+    sleep(1)
+
+    # 5
+    win32gui.SendMessage(window_handle, win32con.WM_KEYDOWN, 0x35, 0)
+    sleep(0.1)
+    win32api.SendMessage(window_handle, win32con.WM_KEYUP, 0x35, 0)
+    sleep(1.5)
+    
+    # 3
+    win32gui.SendMessage(window_handle, win32con.WM_KEYDOWN, 0x33, 0)
+    sleep(0.1)
+    win32api.SendMessage(window_handle, win32con.WM_KEYUP, 0x33, 0)
+    sleep(0.5)
+
+def farm(window_handle):
+    # 2
+    win32gui.SendMessage(window_handle, win32con.WM_KEYDOWN, 0x72, 0)
+    sleep(0.1)
+    win32api.SendMessage(window_handle, win32con.WM_KEYUP, 0x72, 0)
+    sleep(0.5)
+    
+    # 4
+    for n in range(5):
+        win32gui.SendMessage(window_handle, win32con.WM_KEYDOWN, 0x34, 0)
+        sleep(0.1)
+        win32api.SendMessage(window_handle, win32con.WM_KEYUP, 0x34, 0)
+        sleep(0.5)

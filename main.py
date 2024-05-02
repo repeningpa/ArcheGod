@@ -3,15 +3,19 @@ import flet as ft
 import win32api, win32gui, win32con
 from time import sleep
 from fish import mainSearch
-from keyboardClick import buffsOnHorse, qfClick, keyboardClick, testEventKeyUp, testEventKeyDown
+from keyboardClick import buffsOnHorse, qfClick, keyboardClick, testEventKeyUp, testEventKeyDown, bigHeal, farm
 import keyboard as kb
 from keyEvent import keyEvent
+import pyautogui as pag
 
 keyPageUpBool = False
 keyPageDownBool = False
 keyHomeBool = False
+keyEndBool = False
 
 windowKey = False
+# bardWindowKey = False
+# ddWindowKey = False
 
 x1 = 275
 x2 = 1180
@@ -21,7 +25,7 @@ h = 50
 
 def main(page: ft.Page):
     page.title = "ArcheGod"
-    page.window_width = 375 # Задаем ширину окна
+    page.window_width = 490 # Задаем ширину окна
     page.window_height = 350 # Задаем высоту окна
     page.window_resizable = False # Запрещаем изменять размеры окна
     page.update()
@@ -42,16 +46,29 @@ def main(page: ft.Page):
     def changeSecondWindow(e):
         global windowKey
         windowKey = secondWindow.value
+        page.update()
+        
+    # def changeBardWindow(e):
+    #     global bardWindowKey
+    #     bardWindowKey = bardWindow.value
+        
+    # def changeDdWindow(e):
+    #     global ddWindowKey
+    #     ddWindowKey = ddWindow.value
         
     keyPageUpText = ft.Text(value = 'Page Up', size = 15, color = ft.colors.GREY)
     keyPageDownText = ft.Text(value = 'Page Down', size = 15, color = ft.colors.GREY)
     keyHomeText = ft.Text(value = 'Home', size = 15, color = ft.colors.GREY)
+    keyEndText = ft.Text(value = 'End', size = 15, color = ft.colors.GREY)
     
     labelPageUpText = ft.Text(value = 'Бард', size = 15, color = ft.colors.GREY, text_align = ft.TextAlign.CENTER, width = 85)
     labelPageDownText = ft.Text(value = 'ДД', size = 15, color = ft.colors.GREY, text_align = ft.TextAlign.CENTER, width = 85)
     labelHomeText = ft.Text(value = 'Рыбалка', size = 15, color = ft.colors.GREY, text_align = ft.TextAlign.CENTER, width = 85)
+    labelEndText = ft.Text(value = 'Хил Данж', size = 15, color = ft.colors.GREY, text_align = ft.TextAlign.CENTER, width = 85)
 
     secondWindow = ft.Checkbox(label = 'Второе окно', on_change = changeSecondWindow)
+    # bardWindow = ft.Checkbox(label = 'Бард', on_change = changeBardWindow)
+    # ddWindow = ft.Checkbox(label = 'ДД', on_change = changeDdWindow)
         
     def PageUpTest(e):
         global keyPageUpBool
@@ -90,6 +107,19 @@ def main(page: ft.Page):
             keyHome.border = ft.border.all(3, ft.colors.GREY)
             keyHome.content = ft.Text(value = 'Home', size = 15, color = ft.colors.GREY)
             labelHomeText.color = ft.colors.GREY
+        page.update()
+        
+    def EndTest(e):
+        global keyEndBool
+        keyEndBool = not keyEndBool
+        if keyEndBool == True:
+            keyEnd.border = ft.border.all(3, ft.colors.YELLOW)
+            keyEnd.content = ft.Text(value = 'End', size = 15, color = ft.colors.YELLOW)
+            labelEndText.color = ft.colors.YELLOW
+        else:
+            keyEnd.border = ft.border.all(3, ft.colors.GREY)
+            keyEnd.content = ft.Text(value = 'End', size = 15, color = ft.colors.GREY)
+            labelEndText.color = ft.colors.GREY
         page.update()
 
     testCb = ft.Checkbox(label = "Тест", on_change = changeEvent)
@@ -132,6 +162,17 @@ def main(page: ft.Page):
         border_radius = 10,
         border = ft.border.all(3, ft.colors.GREY),
         on_click = HomeTest,
+    )
+    
+    keyEnd = ft.Container(
+        content = keyEndText,
+        alignment = ft.alignment.center,
+        width = 70,
+        height = 70,
+        padding = 10,
+        border_radius = 10,
+        border = ft.border.all(3, ft.colors.GREY),
+        on_click = EndTest,
     )
 
     def route_change(e):
@@ -176,11 +217,27 @@ def main(page: ft.Page):
                                         labelHomeText,
                                     ]
                                 ),
+                                ft.Column(
+                                    [
+                                        ft.Container(
+                                            content = keyEnd,
+                                            alignment = ft.alignment.center,
+                                            width = 85
+                                        ),
+                                        labelEndText,
+                                    ]
+                                ),
                             ],
                         ),
                     ),
                     ft.Container(
-                        content = secondWindow,
+                        content = ft.Column(
+                            [
+                                secondWindow,
+                                # bardWindow,
+                                # ddWindow,
+                            ]
+                        ),
                         padding = 25,
                     ),
                 ],
@@ -203,15 +260,21 @@ def main(page: ft.Page):
             while keyPageDownBool == True:
                 qfClick(window_handle1)    
             while keyHomeBool == True:
+                # pag.screenshot('test1.png', region = (x1 if windowKey == False else x2, y, w, h))
+                # print(x1 if windowKey == False else x2, y, w, h)
                 mainSearch(window_handle1, x1 if windowKey == False else x2, y, w, h)
+            while keyEndBool == True:
+                # bigHeal(window_handle1)
+                farm(window_handle1)
 
     win32gui.MessageBox(None, '1', '', 0)
     window_handle1 = get_window_at_mouse_pos_win()
     win32gui.SetForegroundWindow(window_handle1) # hwnd
 
-    kb.on_press_key('Page_Up', PageUpTest)
+    # kb.on_press_key('Page_Up', PageUpTest)
     kb.on_press_key('Page_Down', PageDownTest)
     kb.on_press_key('Home', HomeTest)
+    # kb.on_press_key('End', EndTest)
     
     threading.Thread(target = miningWin1, daemon = True).start() # поток с событиями
     

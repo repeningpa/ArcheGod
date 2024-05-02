@@ -1,15 +1,32 @@
 import threading
 import flet as ft
-import win32api, win32gui
+import win32api, win32gui, win32con
 from time import sleep
 from fish import mainSearch
-from keyboardClick import buffsOnHorse, qfClick
+from keyboardClick import buffsOnHorse, qfClick, keyboardClick, testEventKeyUp, testEventKeyDown, bigHeal, farm
+import keyboard as kb
+from keyEvent import keyEvent
 import pyautogui as pag
+
+keyPageUpBool = False
+keyPageDownBool = False
+keyHomeBool = False
+keyEndBool = False
+
+windowKey = False
+# bardWindowKey = False
+# ddWindowKey = False
+
+x1 = 275
+x2 = 1180
+y = 100
+w = 140
+h = 50
 
 def main(page: ft.Page):
     page.title = "ArcheGod"
-    page.window_width = 350 # Задаем ширину окна
-    page.window_height = 500 # Задаем высоту окна
+    page.window_width = 490 # Задаем ширину окна
+    page.window_height = 350 # Задаем высоту окна
     page.window_resizable = False # Запрещаем изменять размеры окна
     page.update()
     
@@ -20,24 +37,143 @@ def main(page: ft.Page):
         return window_id
     
     def changeEvent(e):
-        if fishCb.value == True or bardCb.value == True or qfCb.value == True:
+        if testCb.value == True:
             headerContainer.bgcolor = ft.colors.RED
         else:
             headerContainer.bgcolor = ft.colors.SURFACE_VARIANT
         page.update()
-            
-    fishCb = ft.Checkbox(label = "Долбить рыбу", on_change = changeEvent)
-    bardCb = ft.Checkbox(label = "Ебашить по флейте", on_change = changeEvent)
-    qfCb = ft.Checkbox(label = "QF", on_change = changeEvent)
+
+    def changeSecondWindow(e):
+        global windowKey
+        windowKey = secondWindow.value
+        page.update()
+        
+    # def changeBardWindow(e):
+    #     global bardWindowKey
+    #     bardWindowKey = bardWindow.value
+        
+    # def changeDdWindow(e):
+    #     global ddWindowKey
+    #     ddWindowKey = ddWindow.value
+        
+    keyPageUpText = ft.Text(value = 'Page Up', size = 15, color = ft.colors.GREY)
+    keyPageDownText = ft.Text(value = 'Page Down', size = 15, color = ft.colors.GREY)
+    keyHomeText = ft.Text(value = 'Home', size = 15, color = ft.colors.GREY)
+    keyEndText = ft.Text(value = 'End', size = 15, color = ft.colors.GREY)
+    
+    labelPageUpText = ft.Text(value = 'Бард', size = 15, color = ft.colors.GREY, text_align = ft.TextAlign.CENTER, width = 85)
+    labelPageDownText = ft.Text(value = 'ДД', size = 15, color = ft.colors.GREY, text_align = ft.TextAlign.CENTER, width = 85)
+    labelHomeText = ft.Text(value = 'Рыбалка', size = 15, color = ft.colors.GREY, text_align = ft.TextAlign.CENTER, width = 85)
+    labelEndText = ft.Text(value = 'Хил Данж', size = 15, color = ft.colors.GREY, text_align = ft.TextAlign.CENTER, width = 85)
+
+    secondWindow = ft.Checkbox(label = 'Второе окно', on_change = changeSecondWindow)
+    # bardWindow = ft.Checkbox(label = 'Бард', on_change = changeBardWindow)
+    # ddWindow = ft.Checkbox(label = 'ДД', on_change = changeDdWindow)
+        
+    def PageUpTest(e):
+        global keyPageUpBool
+        keyPageUpBool = not keyPageUpBool
+        if keyPageUpBool == True:
+            keyPageUp.border = ft.border.all(3, ft.colors.YELLOW)
+            keyPageUp.content = ft.Text(value = 'Page Up', size = 15, color = ft.colors.YELLOW)
+            labelPageUpText.color = ft.colors.YELLOW
+        else:
+            keyPageUp.border = ft.border.all(3, ft.colors.GREY)
+            keyPageUp.content = ft.Text(value = 'Page Up', size = 15, color = ft.colors.GREY)
+            labelPageUpText.color = ft.colors.GREY
+        page.update()
+        
+    def PageDownTest(e):
+        global keyPageDownBool
+        keyPageDownBool = not keyPageDownBool
+        if keyPageDownBool == True:
+            keyPageDown.border = ft.border.all(3, ft.colors.RED)
+            keyPageDown.content = ft.Text(value = 'Page Down', size = 15, color = ft.colors.RED)
+            labelPageDownText.color = ft.colors.RED
+        else:
+            keyPageDown.border = ft.border.all(3, ft.colors.GREY)
+            keyPageDown.content = ft.Text(value = 'Page Down', size = 15, color = ft.colors.GREY)
+            labelPageDownText.color = ft.colors.GREY
+        page.update()
+        
+    def HomeTest(e):
+        global keyHomeBool
+        keyHomeBool = not keyHomeBool
+        if keyHomeBool == True:
+            keyHome.border = ft.border.all(3, ft.colors.BLUE)
+            keyHome.content = ft.Text(value = 'Home', size = 15, color = ft.colors.BLUE)
+            labelHomeText.color = ft.colors.BLUE
+        else:
+            keyHome.border = ft.border.all(3, ft.colors.GREY)
+            keyHome.content = ft.Text(value = 'Home', size = 15, color = ft.colors.GREY)
+            labelHomeText.color = ft.colors.GREY
+        page.update()
+        
+    def EndTest(e):
+        global keyEndBool
+        keyEndBool = not keyEndBool
+        if keyEndBool == True:
+            keyEnd.border = ft.border.all(3, ft.colors.YELLOW)
+            keyEnd.content = ft.Text(value = 'End', size = 15, color = ft.colors.YELLOW)
+            labelEndText.color = ft.colors.YELLOW
+        else:
+            keyEnd.border = ft.border.all(3, ft.colors.GREY)
+            keyEnd.content = ft.Text(value = 'End', size = 15, color = ft.colors.GREY)
+            labelEndText.color = ft.colors.GREY
+        page.update()
+
+    testCb = ft.Checkbox(label = "Тест", on_change = changeEvent)
     headerText = ft.Text(size = 40, text_align = ft.TextAlign.CENTER)
     
     headerContainer = ft.Container(
         content = headerText,
         bgcolor = ft.colors.SURFACE_VARIANT,
-        width = 350,
+        width = 500,
+    )
+
+    keyPageUp = ft.Container(
+        content = keyPageUpText,
+        alignment = ft.alignment.center,
+        width = 70,
+        height = 70,
+        padding = 10,
+        border_radius = 10,
+        border = ft.border.all(3, ft.colors.GREY),
+        on_click = PageUpTest,
     )
     
-    # input_column = ft.Column([headerText])
+    keyPageDown = ft.Container(
+        content = keyPageDownText,
+        alignment = ft.alignment.center,
+        width = 70,
+        height = 70,
+        padding = 10,
+        border_radius = 10,
+        border = ft.border.all(3, ft.colors.GREY),
+        on_click = PageDownTest,
+    )
+    
+    keyHome = ft.Container(
+        content = keyHomeText,
+        alignment = ft.alignment.center,
+        width = 70,
+        height = 70,
+        padding = 10,
+        border_radius = 10,
+        border = ft.border.all(3, ft.colors.GREY),
+        on_click = HomeTest,
+    )
+    
+    keyEnd = ft.Container(
+        content = keyEndText,
+        alignment = ft.alignment.center,
+        width = 70,
+        height = 70,
+        padding = 10,
+        border_radius = 10,
+        border = ft.border.all(3, ft.colors.GREY),
+        on_click = EndTest,
+    )
 
     def route_change(e):
         page.views.clear()        
@@ -45,39 +181,64 @@ def main(page: ft.Page):
             ft.View(
                 "/",
                 [
-                    # input_column,
                     headerContainer,
-                    ft.ExpansionTile(
-                        title = ft.Text("Рыбалка"),
-                        subtitle = ft.Text("Общие..."),
-                        affinity = ft.TileAffinity.LEADING,
-                        collapsed_text_color = ft.colors.BLUE,
-                        text_color = ft.colors.BLUE,
-                        controls_padding = 25,
-                        controls = [
-                            fishCb,
-                        ],
+                    ft.Container(
+                        padding = 20,
+                        content = ft.Row(
+                            spacing = 30,
+                            controls = [
+                                ft.Column(
+                                    [
+                                        ft.Container(
+                                            content = keyPageUp,
+                                            alignment = ft.alignment.center,
+                                            width = 85
+                                        ),
+                                        labelPageUpText,
+                                    ]
+                                ),
+                                ft.Column(
+                                    [
+                                        ft.Container(
+                                            content = keyPageDown,
+                                            alignment = ft.alignment.center,
+                                            width = 85
+                                        ),
+                                        labelPageDownText,
+                                    ]
+                                ),
+                                ft.Column(
+                                    [
+                                        ft.Container(
+                                            content = keyHome,
+                                            alignment = ft.alignment.center,
+                                            width = 85
+                                        ),
+                                        labelHomeText,
+                                    ]
+                                ),
+                                ft.Column(
+                                    [
+                                        ft.Container(
+                                            content = keyEnd,
+                                            alignment = ft.alignment.center,
+                                            width = 85
+                                        ),
+                                        labelEndText,
+                                    ]
+                                ),
+                            ],
+                        ),
                     ),
-                    ft.ExpansionTile(
-                        title = ft.Text("Бард"),
-                        subtitle = ft.Text("Макросы для хилочки..."),
-                        affinity = ft.TileAffinity.LEADING,
-                        collapsed_text_color = ft.colors.GREEN,
-                        text_color = ft.colors.GREEN,
-                        controls_padding = 25,
-                        controls=[
-                            bardCb,
-                        ],
-                    ),
-                    ft.ExpansionTile(
-                        title = ft.Text("ДД"),
-                        affinity = ft.TileAffinity.LEADING,
-                        collapsed_text_color = ft.colors.RED,
-                        text_color = ft.colors.RED,
-                        controls_padding = 25,
-                        controls=[
-                            qfCb,
-                        ],
+                    ft.Container(
+                        content = ft.Column(
+                            [
+                                secondWindow,
+                                # bardWindow,
+                                # ddWindow,
+                            ]
+                        ),
+                        padding = 25,
                     ),
                 ],
                 padding = 0,
@@ -90,26 +251,31 @@ def main(page: ft.Page):
         page.views.pop()
         top_view = page.views[-1]
         page.go(top_view.route)
-        
-    def mining():
+    
+    def miningWin1():
         while True:
-            sleep(2)
-            while fishCb.value == True:
-                sleep(0.5)
-                # pag.screenshot('test1.png', region = (1180, 100, 140, 50))
-                # mainSearch(window_handle, 1180, 100, 140, 50)
-                mainSearch(window_handle, 275, 100, 140, 50)
-            while bardCb.value == True:
-                sleep(0.5)
-                buffsOnHorse(window_handle)
-            while qfCb.value == True:
-                qfClick(window_handle)
+            sleep(0.1)
+            while keyPageUpBool == True:
+                buffsOnHorse(window_handle1)
+            while keyPageDownBool == True:
+                qfClick(window_handle1)    
+            while keyHomeBool == True:
+                # pag.screenshot('test1.png', region = (x1 if windowKey == False else x2, y, w, h))
+                # print(x1 if windowKey == False else x2, y, w, h)
+                mainSearch(window_handle1, x1 if windowKey == False else x2, y, w, h)
+            while keyEndBool == True:
+                # bigHeal(window_handle1)
+                farm(window_handle1)
 
     win32gui.MessageBox(None, '1', '', 0)
-    window_handle = get_window_at_mouse_pos_win()
-    print(window_handle)
-    win32gui.SetForegroundWindow(window_handle) # hwnd
-    threading.Thread(target = mining, daemon = True).start()
+    window_handle1 = get_window_at_mouse_pos_win()
+    win32gui.SetForegroundWindow(window_handle1) # hwnd
+
+    kb.on_press_key('Page_Up', PageUpTest)
+    kb.on_press_key('Home', HomeTest)
+    kb.on_press_key('End', EndTest)
+    
+    threading.Thread(target = miningWin1, daemon = True).start() # поток с событиями
     
     page.on_route_change = route_change(page)
     page.on_view_pop = view_pop
